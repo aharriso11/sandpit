@@ -5,10 +5,10 @@ This is the output of me playing around with the R statistical programming langu
 I'm publishing these interpretations of data already in the public domain purely for my personal interest. 
 
 ## England daily cases
-![England daily cases](daily_england_cases.png)
+![England daily cases](daily_england_cases.png?raw=true)
 
 ## Dorset daily cases
-![Dorset daily cases](daily_dorset_cases.png)
+![Dorset daily cases](daily_dorset_cases.png?raw=true)
 
 ## Dorset daily hospital admissions
-![Dorset daily admissions](daily_dorset_admissions.png)
+![Dorset daily admissions](daily_dorset_admissions.png?raw=true)
