@@ -46,3 +46,7 @@ covid_cases_plot +
   xlab("Date") +
   ylab("Cases") +
   theme_bw()
+
+# save to daily file
+ggsave("~/Documents/R/daily_dorset_cases.png", width = 16.6, height = 8.65, units = "in")
+ggsave("~/Documents/Github/sandpit/daily_dorset_cases.png", width = 16.6, height = 8.65, units = "in")
