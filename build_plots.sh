@@ -7,9 +7,9 @@ commit_string=$(date '+%Y_%m_%d_%H%M')
 
 touch "timestamp${commit_string}"
 
-rscript "/users/andrewharrison/Documents/R/covid admissions dorset.R"
-rscript "/users/andrewharrison/Documents/R/covid dorset cases.R"
-rscript "/users/andrewharrison/Documents/R/covid daily cases.R"
+/usr/local/bin/rscript "/users/andrewharrison/Documents/R/covid admissions dorset.R"
+/usr/local/bin/rscript "/users/andrewharrison/Documents/R/covid dorset cases.R"
+/usr/local/bin/rscript "/users/andrewharrison/Documents/R/covid daily cases.R"
 
 cd /users/andrewharrison/Documents/Github/sandpit
 
