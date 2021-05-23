@@ -2,6 +2,7 @@
 
 library("ggplot2")
 library("tidyr")
+library("reshape")
 
 # IMPORT DATASETS ----
 
@@ -34,12 +35,12 @@ vaccs_long <- gather(vaccs_combined, event, total, First, Second)
 # create plot and geom
 covid_vaccs_plot <- ggplot() +
   geom_bar(data = vaccs_long, aes(x = date, y = total, fill = event), stat="identity", position = "stack", width = 0.7) +
-  scale_fill_manual(name = "Vaccination", values = c("First" = "red3", "Second" = "blue3"), labels = c("First", "Second")) +
+  scale_fill_manual(name = "Vaccination", values = c("First" = "paleturquoise3", "Second" = "turquoise4"), labels = c("First", "Second")) +
   facet_grid( ~ areaName) +
   theme_bw() +
   scale_x_date(date_labels = "%B %Y", date_breaks = "2 months") +
   ggtitle("Dorset covid vaccinations") +
-  labs(caption = "Data from Public Health England / https://coronavirus.data.gov.uk") +
+  labs(caption = paste("Data from Public Health England / https://coronavirus.data.gov.uk. Plotted", Sys.time(), sep = " ")) +
   xlab("Date") +
   ylab("Vaccinations")
 

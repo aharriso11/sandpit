@@ -36,7 +36,7 @@ melt.cases$date = as.Date(melt.cases$date, "%Y-%m-%d")
 # create plot and geom
 covid_cases_plot <- ggplot(melt.cases, aes(x = date, y = cases, col = area)) +
   geom_point(shape = 1, size = 2) + scale_colour_manual(name = "Local authority", values = c("cases_07da_dor" = "green4", "cases_07da_bcp" = "darkmagenta"), labels = c("BCP", "Dorset")) +
-  labs(caption = "Data from Public Health England / https://coronavirus.data.gov.uk")
+  labs(caption = paste("Data from Public Health England / https://coronavirus.data.gov.uk. Plotted", Sys.time(), sep = " "))
 
 # set plot params
 covid_cases_plot + 

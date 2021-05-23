@@ -7,6 +7,9 @@ I'm publishing these interpretations of data already in the public domain purely
 ## Dorset daily vaccinations
 ![Dorset daily vaccinations](daily_dorset_vaccinations.png?raw=true)
 
+## Dorset daily vaccinations as percentage of population
+![Dorset daily vaccinations as percentage of population](daily_dorset_vaccs_percentage.png?raw=true)
+
 ## England daily cases
 ![England daily cases](daily_england_cases.png?raw=true)
 
