@@ -39,7 +39,7 @@ covid_vaccs_plot <- ggplot() +
   facet_grid( ~ areaName) +
   theme_bw() +
   scale_x_date(date_labels = "%B %Y", date_breaks = "2 months") +
-  ggtitle("Dorset covid vaccinations") +
+  ggtitle("Dorset covid vaccinations by local authority") +
   labs(caption = paste("Data from Public Health England / https://coronavirus.data.gov.uk. Plotted", Sys.time(), sep = " ")) +
   xlab("Date") +
   ylab("Vaccinations")
