@@ -19,5 +19,5 @@ cd /users/andrewharrison/Documents/Github/sandpit
 echo "push_${commit_string}"
 
 git add .
-git commit -am "'push_${commit_string}'"
+git commit -am "push_${commit_string}"
 git push
