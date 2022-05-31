@@ -39,7 +39,7 @@ png("password_expiry.png", width = 1280, height = 768)
 plot(df2$ExpiryDate, df2$n, xaxt = "n", type = "l",
      col = "red", #colour
      lwd = 3,     # line width
-     main = "DHCT_DOMAIN forecast password expiry dates", #title
+     main = "Forecast password expiry dates", #title
      xlab = "Date", # x axis label
      ylab = "Passwords expiring") # y axis label
 # separate command to create x axis scale (I googled this)
