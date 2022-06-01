@@ -60,7 +60,7 @@ df_plot <- ggplot() +
   xlab("Expiry date") +
   ylab("Number of password resets") +
   # give the plot a title
-  ggtitle("DHCT_DOMAIN actual password resets") +
+  ggtitle("Domain actual password resets") +
   # set a theme - I usually use the base theme
   theme_base() +
   # customise the theme
