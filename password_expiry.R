@@ -51,7 +51,7 @@ png("password_expiry.png", width = 1280, height = 768)
 plot(df2$ExpiryDate, df2$n, xaxt = "n", type = "h",
      col = "red", #colour
      lwd = 3,     # line width
-     main = "DHCT_DOMAIN forecast password expiry dates", #title
+     main = "Domain forecast password expiry dates", #title
      xlab = "Date", # x axis label
      ylab = "Passwords expiring") # y axis label
 # separate command to create x axis scale (I googled this)
@@ -72,7 +72,7 @@ df_plot <- ggplot() +
   xlab("Expiry date") +
   ylab("Number of passwords expiring") +
   # give the plot a title
-  ggtitle("DHCT_DOMAIN forecast password expiry dates") +
+  ggtitle("Domain forecast password expiry dates") +
   # set a theme - I usually use the base theme
   theme_base() +
   # customise the theme
