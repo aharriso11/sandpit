@@ -10,4 +10,6 @@ Results are returned in JSON format by default, to neatly format this when retri
 
 <https://directory.spineservices.nhs.uk/ORD/2-0-0/roles>
 
-## 
+## Official documentation
+
+<https://digital.nhs.uk/developer/api-catalogue/organisation-data-service-ord>
