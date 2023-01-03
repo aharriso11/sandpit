@@ -1,5 +1,7 @@
 # Role IDs
 
+This is a list of the role IDs returned by the NHS ORD API.
+
 |id    |code |displayName                                             |primaryRole |
 |:-----|:----|:-------------------------------------------------------|:-----------|
 |RO200 |200  |WELSH ASSEMBLY                                          |true        |
