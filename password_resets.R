@@ -53,6 +53,9 @@ df3 <- df2 %>%
 # the library (Lubridate) that it comes from
 df3$Day <- lubridate::wday(df3$X_time_1, label=TRUE, abbr=FALSE)
 
+# optional!
+df3 <- subset(df3, X_time_1 > "2022-10-17")
+
 
 # PLOT DATA IN GGPLOT
 
@@ -60,7 +63,7 @@ df_plot <- ggplot() +
   # create a column chart using df2 with our new Day column defining how the objects get filled
   geom_col(data = df3, aes(x = X_time_1, y = n, fill = Day)) +
   # set the x axis labels
-  scale_x_date(date_labels = "%a %d %b %y", date_breaks = "1 week") +
+  scale_x_date(date_labels = "%a %d %b %y", date_breaks = "1 day") +
   # set axis titles
   xlab("Date") +
   ylab("Number") +
