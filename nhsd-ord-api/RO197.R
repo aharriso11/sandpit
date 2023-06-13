@@ -25,3 +25,5 @@ df2 <- df2 %>%
   filter(Status=="Active")
 
 write.csv(df2, file = "RO197.csv", row.names = FALSE)
+
+df3 <- fromJSON("https://directory.spineservices.nhs.uk/ORD/2-0-0/organisations/RDY")
