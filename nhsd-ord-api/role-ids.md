@@ -1,5 +1,7 @@
 # Role IDs
 
+This is a list of the role IDs returned by the NHS ORD API. You can access this information by getting it from [https://directory.spineservices.nhs.uk/ORD/2-0-0/roles](https://directory.spineservices.nhs.uk/ORD/2-0-0/roles)
+
 |id    |code |displayName                                             |primaryRole |
 |:-----|:----|:-------------------------------------------------------|:-----------|
 |RO200 |200  |WELSH ASSEMBLY                                          |true        |

@@ -20,3 +20,5 @@ df_plot <- ggplot() +
   theme_base()
 
 df_plot
+
+ggsave("backup_devices.png", width = 16.6, height = 8.65, units = "in")
