@@ -1,0 +1,421 @@
+---
+title: "Dorset HealthCare digital maturity"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| warning: false
+
+# LOAD LIBRARIES ----
+
+# Install the pacman package to call all the other packages
+if (!require("pacman")) install.packages("pacman")
+
+# Use pacman to install (if req) and load required packages
+pacman::p_load(
+  tidyverse,
+  ggthemes,
+  data.table,
+#  scales,
+  readxl,
+  ggtext,
+  fmsb
+)
+```
+
+## Averaged score
+
+This spider chart presents an averaged score against each Digital Maturity Assessment category.
+
+```{r}
+#| echo: false
+#| warning: false
+
+# IMPORT DATA ----
+
+# set sheet path
+# workbook_path <- "j:/dma2023.xlsx"
+workbook_path <- "/Users/andrewharrison/Downloads/dma2023.xlsx"
+workbook_sheet <- "dma"
+
+# import
+df <- read_excel(workbook_path, sheet = workbook_sheet)
+
+# averaged radar chart ----
+
+# create a dataframe without the capability names
+by_category <- subset(df, select = c("Category", "Score", "Min", "Max"))
+
+# group by category
+# sum all the other columns (score, max and min)
+# divide the score by the maxed score and multiply by five
+# giving a score out of five for each category
+by_category <- by_category %>% 
+  group_by(Category) %>%
+  summarise(across(everything(), sum, na.rm=TRUE)) %>%
+  mutate(computed_score = Score / Max * 5)
+
+# add a computed max and min score for each row
+by_category$computed_max = 5
+by_category$computed_min = 0
+
+# form a separate df with only the computed numbers
+df_radar <- subset(by_category, select = c("Category", "computed_max", "computed_min", "computed_score"))
+
+# set the row names to be the values of the category column
+row.names(df_radar) <- df_radar$Category[1:7]
+
+# now transpose the df
+df_radar2 <- t(df_radar)
+
+# get the category names as a vector to use as axis titles
+vl_vec <- c(df_radar$Category)
+
+# remove the category names from the first row
+df_radar2 <- df_radar2[-1,]
+
+# set the df as a data.frame
+df_radar2 <- data.frame(df_radar2)
+
+# convert everything to numbers
+df_radar2 <- sapply(df_radar2, as.numeric)
+
+# set the df as a data.frame again
+df_radar2 <- data.frame(df_radar2)
+
+# do the radar plot
+radarchart(df_radar2,
+           axistype = 4,
+           cglty = 1, cglcol = "gray",
+           pcol = 4, plwd = 2,
+           pfcol = rgb(0, 0.4, 1, 0.25),
+           title = "DMA averaged score",
+           vlabels = vl_vec,
+           caxislabels = c(1, 2, 3, 4, 5))
+```
+
+## Per category assessment {.smaller}
+
+```{r}
+#| echo: false
+#| warning: false
+
+df_plot <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = df, aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle("Dorset HealthCare - 2023 digital maturity assessment") +
+  # facet the plot by category and give each facet its own scales
+  facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot
+```
+
+## Well led
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Well led"
+
+df_plot_wl <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_wl
+```
+
+## Ensure smart foundations
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Ensure smart foundations"
+
+df_plot_esf <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_esf
+
+```
+
+## Safe practice
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Safe practice"
+
+df_plot_sp <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_sp
+
+```
+
+## Support people
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Support people"
+
+df_plot_sup <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_sup
+
+```
+
+## Empower citizens
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Empower citizens"
+
+df_plot_ec <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_ec
+
+```
+
+## Improve care
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Improve care"
+
+df_plot_ic <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_ic
+
+```
+
+## Healthy populations
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+plot_title <- "Healthy populations"
+
+df_plot_hp <- ggplot() +
+  # bar chart with x and y axis
+  geom_bar(data = subset(df, Category==plot_title), aes(x=Capability, y=Score, fill=Score), stat = "identity") +
+  # make the y axis show 0-5 regardless of the data
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4, 5), limits = c(0,5)) +
+  # title
+  ggtitle(plot_title) +
+  # facet the plot by category and give each facet its own scales
+  # facet_wrap( ~ Category, scales = "free") +
+  # flip axis
+  coord_flip() +
+  # theme settings
+  theme_clean() +
+  theme(
+    # hide the legent
+    legend.position = "none",
+    axis.text.x = element_text(angle = 0, size = 7, hjust = 1),
+    axis.text.y = element_text(angle = 0, size = 7, hjust = 1),
+    plot.title = element_text(size = 20, family = "Helvetica", face = "bold"),
+    plot.subtitle = element_markdown(hjust = 0, vjust = 0, size = 11),
+    plot.caption = element_text(size = 10),
+    # hide axis titles
+    axis.title = element_blank(),
+    axis.text = element_text(size = 12))
+```
+
+```{r}
+#| echo: false
+
+df_plot_hp
+
+```

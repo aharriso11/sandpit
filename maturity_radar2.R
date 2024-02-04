@@ -22,21 +22,23 @@ pacman::p_load(
   scales,
   R.utils,
   readxl,
-  ggtext
+  ggtext,
+  fmsb
 )
 
 # IMPORT DATA ----
 
 # set sheet path
-workbook_path <- "j:/dma2023.xlsx"
+# workbook_path <- "j:/dma2023.xlsx"
+workbook_path <- "/Users/andrewharrison/Downloads/dma2023.xlsx"
 workbook_sheet <- "dma"
 
 # import
 df <- read_excel(workbook_path, sheet = workbook_sheet)
 
 # install ggradar separately because reasons
-devtools::install_github("ricardo-bion/ggradar", dependencies = TRUE)
-library(ggradar)
+# devtools::install_github("ricardo-bion/ggradar", dependencies = TRUE)
+# library(ggradar)
 
 # averaged radar chart ----
 
