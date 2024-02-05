@@ -1,7 +1,7 @@
 # SET COMMON VARIABLES ----
 
 # set working directory
-setwd("~/Downloads/")
+setwd("c:/users/andrewh/Downloads/")
 
 # disable scientific notation
 options(scipen=999)
@@ -27,8 +27,9 @@ pacman::p_load(
   #  tidyr,
   #  ggalt,
   #  directlabels,
-  #  scales,
-  ggtext
+  scales,
+  ggtext,
+  pals
 )
 
 # IMPORT DATASETS ----
@@ -67,12 +68,19 @@ dfd2 <- subset(dfd2, lastseen_date>lubridate::today() - lubridate::days(90))
 dfd3 <- dfd2 %>%
   dplyr::count(PatchDate2)
 
+# tidy up NAs
+dfd3 <- na.omit(dfd3)
+
 # calculate a percentage for each one
-dfd3$desktop_per <- dfd3$n / sum(dfd3$n) * 100
+dfd3$Endpoint <- dfd3$n / sum(dfd3$n) * 100
 
 # and add a month and year label column for each month
-dfd3$Month_Yr <- format(as.Date(dfd3$PatchDate2), "%B %Y")
+dfd3$Month <- format(as.Date(dfd3$PatchDate2), "%B %Y")
 
+
+endpoint_per_marker <- sum(tail(dfd3$Endpoint, 3))
+
+dfd3$marker <- endpoint_per_marker
 
 # TRANSFORM DATA - SERVERS ----
 
@@ -104,11 +112,19 @@ dfs2 <- subset(dfs2, lastseen_date>lubridate::today() - lubridate::days(90))
 dfs3 <- dfs2 %>%
   dplyr::count(PatchDate2)
 
+# tidy any NAs
+dfs3 <- na.omit(dfs3)
+
 # calculate a percentage for each one
-dfs3$server_per <- dfs3$n / sum(dfs3$n) * 100
+dfs3$Server <- dfs3$n / sum(dfs3$n) * 100
 
 # and add a month and year label column for each month
-dfs3$Month_Yr <- format(as.Date(dfs3$PatchDate2), "%B %Y")
+dfs3$Month <- format(as.Date(dfs3$PatchDate2), "%B %Y")
+
+server_per_marker <- sum(tail(dfs3$Server, 3))
+
+dfs3$marker <- server_per_marker
+
 
 
 
@@ -119,10 +135,32 @@ df3_list <- list(dfd3, dfs3)
 df3_combined <- reshape::merge_recurse(df3_list)
 
 
+df4 <- tidyr::gather(df3_combined, estate, per, Endpoint:Server, na.rm = TRUE)
 
+df4 <- df4 %>%
+  dplyr::arrange(desc(PatchDate2))
 
+legend_ord <- levels(with(df4, stats::reorder(Month, PatchDate2, decreasing=TRUE)))
 
-plot <- ggplot2::ggplot() +
-  geom_bar(data = df3, aes(x = , y = per, fill = PatchDate2), position = "fill", stat = "identity")
+plot <- ggplot2::ggplot(df4, aes(x = estate, y = per)) +
+  geom_col(data = df4, aes(fill = Month, group = PatchDate2)) +
+  scale_fill_manual(breaks = legend_ord, values=rev(ocean.thermal(26))) +
+#  scale_y_continuous(breaks = 0, 25, 50, 75, 85, 100) +
+  geom_hline(yintercept = 85, linetype = "solid", colour = "black", size = 2) +
+  geom_text(aes(label = Month), position = "stack", size = 3.5, angle = 90, vjust = -0.35) +
+  geom_errorbar(aes(ymax = marker, ymin = marker), colour = "red", size = 2) +
+  xlab("Estate") +
+  ylab("Percentage of estate") +
+  coord_flip() +
+  ggtitle("Windows estate - security patching uptake") +
+  labs(subtitle = "This chart shows the uptake of security patches across our Windows IT estate. <br> We aim to have eighty five per cent of the estate (shown by a thick black line) covered by a security update that has been released in the past three months (red line).", caption = paste("Data from Lansweeper. Plotted", Sys.time(), sep = " ")) +
+  theme_base() +
+  theme(
+    plot.subtitle = element_markdown(size = 11),
+    plot.caption = element_markdown(size = 8),
+    legend.text = element_text(size = 11)
+  )
 
 plot
+
+ggsave("patching.png", width = 33.867, height = 19.05, units = "cm")
