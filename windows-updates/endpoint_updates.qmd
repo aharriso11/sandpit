@@ -1,0 +1,353 @@
+---
+title: "Dorset HealthCare University NHS Foundation Trust :: Windows patching report"
+subtitle: "7th February 2024"
+format: pdf
+mainfont: "Arial"
+sansfont: "Arial"
+fontsize: "10"
+papersize: "A4"
+editor: visual
+---
+
+## Introduction
+
+This combined Windows patching report is assembled from the two detailed patching reports exported from the Trust's *Lansweeper* inventory system. It shows a summarised view of the alignment of endpoint devices (desktops and laptops) and servers against monthly security updates issued by Microsoft.
+
+The digital team's historic goal has been to patch seventy per cent of devices within ninety days, however as this is now achieved regularly we are working towards a stretch goal of around ninety per cent.
+
+## Contact point
+
+**Andrew Harrison, Digital solution architect**
+
+**Tel:** 07770 357175, **email:** andrew.harrison11\@nhs.net
+
+```{r}
+#| echo: false
+#| warning: false
+
+# SET COMMON VARIABLES ----
+options(digits = 2)
+
+# set working directory
+setwd("C:/b/")
+
+# LOAD LIBRARIES ----
+
+# Install the pacman package to call all the other packages
+if (!require("pacman")) install.packages("pacman")
+
+# Use pacman to install (if req) and load required packages
+pacman::p_load(
+  ggplot2,
+  dplyr,
+  zoo,
+  lubridate,
+  devtools,
+  tidyverse,
+  ggthemes,
+  readxl,
+  splitstackshape,
+  data.table,
+  scales,
+  R.utils,
+  treemap
+)
+
+# IMPORT DATA ----
+
+# set sheet path
+sheet_path <- "c:/b/web50repWindowsUpdateDetailsDesktop.xlsx"
+
+# import
+df <- read_excel(sheet_path, sheet = "report")
+
+# create a new dataframe and use a dplyr pipeline to
+# count the number of occurrences of a date
+df_month <- df %>%
+  group_by(PatchDate) %>%
+  count(PatchDate)
+
+df_month$PatchDateReal <- zoo::as.Date(zoo::as.yearmon(df_month$PatchDate))
+
+df_month <- df_month[order(df_month$PatchDateReal, decreasing = TRUE),]
+
+df_month_print <- subset(df_month, select = c("PatchDate", "n"))
+
+names(df_month_print)[names(df_month_print) == "PatchDate"] <- "Month"
+names(df_month_print)[names(df_month_print) == "n"] <- "Devices"
+
+df_month_print$Percentage <- 100 * df_month_print$Devices/sum(df_month_print$Devices)
+
+
+df_stat <- df %>%
+  group_by(`Patch status`) %>%
+  count(`Patch status`)
+
+names(df_stat)[names(df_stat) == "Patch status"] <- "Status"
+names(df_stat)[names(df_stat) == "n"] <- "Devices"
+
+df_stat$Status[df_stat$Status == "Up to Date"] <- "Within 30 days"
+df_stat$Status[df_stat$Status == "30+ Days Out of Date"] <- "Within 90 days"
+df_stat$Status[df_stat$Status == "90+ Days Out of Date"] <- "Over 90 days"
+
+df_stat$Percentage <- 100 * df_stat$Devices/sum(df_stat$Devices)
+
+df_stat_print <- df_stat
+
+df_stat_print$Status[df_stat$Status == "Within 30 days"] <- "Endpoints patched within 90 days"
+df_stat_print$Status[df_stat$Status == "Within 90 days"] <- "Endpoints patched within 90 days"
+df_stat_print$Status[df_stat$Status == "Over 90 days"] <- "Endpoints not patched within 90 days"
+
+df_stat_print <- df_stat_print %>%
+  group_by(Status) %>%
+  summarise(sum_percentage = sum(Percentage),
+            .groups = 'drop')
+
+df_stat_print <- df_stat_print[order(df_stat_print$sum_percentage, decreasing = TRUE),]
+
+
+```
+
+# Endpoint report
+
+## Endpoint updates
+
+This chart provides a visual representation of the distribution of Windows updates across the endpoint estate. Updates are released in the middle of each month and take time to be installed across the estate.
+
+```{r}
+#| echo: false
+#| warning: false
+
+df_month_plot <- treemap::treemap(df_month,
+                                  
+                                  # data
+                                  index = "PatchDate",
+                                  vSize = "n",
+                                  type = "index",
+                                  
+                                  # main
+                                  title = "",
+                                  palette = "Dark2",
+                                  
+                                  # borders
+                                  border.col = c("black"),
+                                  border.lwds = 1,
+                                  
+                                  # labels
+                                  fontsize.labels = 10,
+                                  fontcolor.labels = "white",
+                                  fontface.labels = "bold",
+                                  bg.labels = c("transparent"),
+                                  align.labels = c("left", "top"),
+                                  overlap.labels = 0.5,
+                                  inflate.labels = T
+                                  
+                                  )
+```
+
+This is a tabular view of the same distribution where the percentage share can also be seen.
+
+```{r}
+#| echo: false
+
+options(digits = 2)
+
+knitr::kable(df_month_print)
+```
+
+## Proportion of endpoint updates applied within ninety days
+
+This chart provides a visual representation of the proportion of the endpoint estate that has received Windows updates in the last ninety days.
+
+```{r}
+#| echo: false
+#| warning: false
+
+df_stat_plot <- treemap::treemap(df_stat,
+                                  
+                                  # data
+                                  index = "Status",
+                                  vSize = "Devices",
+                                  type = "index",
+                                  
+                                  # main
+                                  title = "",
+                                  palette = "Dark2",
+                                  
+                                  # borders
+                                  border.col = c("black"),
+                                  border.lwds = 1,
+                                  
+                                  # labels
+                                  fontsize.labels = 10,
+                                  fontcolor.labels = "white",
+                                  fontface.labels = "bold",
+                                  bg.labels = c("transparent"),
+                                  align.labels = c("left", "top"),
+                                  overlap.labels = 0.5,
+                                  inflate.labels = T
+                                  
+                                  )
+```
+
+This is a tabular view of a simplified version of the same distribution where the percentage share can also be seen.
+
+```{r}
+#| echo: false
+
+options(digits = 2)
+
+knitr::kable(df_stat_print)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+# SET COMMON VARIABLES ----
+options(digits = 2)
+
+# set working directory
+setwd("C:/b/")
+
+# IMPORT DATA ----
+
+# set sheet path
+sheet_path_server <- "c:/b/web50repWindowsUpdateDetailsServer.xlsx"
+
+# import
+df_server <- read_excel(sheet_path_server, sheet = "report")
+
+
+# munge server
+df_month_server <- df_server %>%
+  group_by(PatchDate) %>%
+  count(PatchDate)
+
+df_month_server$PatchDateReal <- zoo::as.Date(zoo::as.yearmon(df_month_server$PatchDate))
+
+df_month_server <- df_month_server[order(df_month_server$PatchDateReal, decreasing = TRUE),]
+
+df_month_server_print <- subset(df_month_server, select = c("PatchDate", "n"))
+
+names(df_month_server_print)[names(df_month_server_print) == "PatchDate"] <- "Month"
+names(df_month_server_print)[names(df_month_server_print) == "n"] <- "Devices"
+
+df_month_server_print$Percentage <- 100 * df_month_server_print$Devices/sum(df_month_server_print$Devices)
+
+df_stat_server <- df_server %>%
+  group_by(`Patch status`) %>%
+  count(`Patch status`)
+
+names(df_stat_server)[names(df_stat_server) == "Patch status"] <- "Status"
+names(df_stat_server)[names(df_stat_server) == "n"] <- "Devices"
+
+df_stat_server$Status[df_stat_server$Status == "Up to Date"] <- "Within 30 days"
+df_stat_server$Status[df_stat_server$Status == "30+ Days Out of Date"] <- "Within 90 days"
+df_stat_server$Status[df_stat_server$Status == "90+ Days Out of Date"] <- "Over 90 days"
+
+df_stat_server$Percentage <- 100 * df_stat_server$Devices/sum(df_stat_server$Devices)
+
+df_stat_server_print <- df_stat_server
+
+df_stat_server_print$Status[df_stat_server$Status == "Within 30 days"] <- "Servers patched within 90 days"
+df_stat_server_print$Status[df_stat_server$Status == "Within 90 days"] <- "Servers patched within 90 days"
+df_stat_server_print$Status[df_stat_server$Status == "Over 90 days"] <- "servers not patched within 90 days"
+
+df_stat_server_print <- df_stat_server_print %>%
+  group_by(Status) %>%
+  summarise(sum_percentage = sum(Percentage),
+            .groups = 'drop')
+
+df_stat_server_print <- df_stat_server_print[order(df_stat_server_print$sum_percentage, decreasing = TRUE),]
+
+```
+
+# Server report
+
+## Server updates
+
+```{r}
+#| echo: false
+#| warning: false
+
+df_month_server_plot <- treemap::treemap(df_month_server,
+                                  
+                                  # data
+                                  index = "PatchDate",
+                                  vSize = "n",
+                                  type = "index",
+                                  
+                                  # main
+                                  title = "",
+                                  palette = "Dark2",
+                                  
+                                  # borders
+                                  border.col = c("black"),
+                                  border.lwds = 1,
+                                  
+                                  # labels
+                                  fontsize.labels = 10,
+                                  fontcolor.labels = "white",
+                                  fontface.labels = "bold",
+                                  bg.labels = c("transparent"),
+                                  align.labels = c("left", "top"),
+                                  overlap.labels = 0.5,
+                                  inflate.labels = T
+                                  
+                                  )
+
+```
+
+```{r}
+#| echo: false
+
+options(digits = 2)
+
+knitr::kable(df_month_server_print)
+```
+
+## Proportion of server updates applied within ninety days
+
+This chart provides a visual representation of the proportion of the server estate that has received Windows updates in the last ninety days.
+
+```{r}
+#| echo: false
+#| warning: false
+
+df_stat_plot <- treemap::treemap(df_stat_server,
+                                  
+                                  # data
+                                  index = "Status",
+                                  vSize = "Devices",
+                                  type = "index",
+                                  
+                                  # main
+                                  title = "",
+                                  palette = "Dark2",
+                                  
+                                  # borders
+                                  border.col = c("black"),
+                                  border.lwds = 1,
+                                  
+                                  # labels
+                                  fontsize.labels = 10,
+                                  fontcolor.labels = "white",
+                                  fontface.labels = "bold",
+                                  bg.labels = c("transparent"),
+                                  align.labels = c("left", "top"),
+                                  overlap.labels = 0.5,
+                                  inflate.labels = T
+                                  
+                                  )
+```
+
+This is a tabular view of a simplified version of the same distribution where the percentage share can also be seen.
+
+```{r}
+#| echo: false
+
+options(digits = 2)
+
+knitr::kable(df_stat_server_print)
+```

@@ -144,24 +144,24 @@ legend_ord <- levels(with(df4, stats::reorder(Month, PatchDate2, decreasing=TRUE
 
 plot <- ggplot2::ggplot(df4, aes(x = estate, y = per)) +
   geom_col(data = df4, aes(fill = Month, group = PatchDate2)) +
-  scale_fill_manual(breaks = legend_ord, values=rev(ocean.haline(20))) +
-#  scale_fill_manual(breaks = legend_ord, values=rev(viridis(26))) +
-#  scale_y_continuous(breaks = 0, 25, 50, 75, 85, 100) +
-  geom_hline(yintercept = 85, linetype = "solid", colour = "black", size = 1) +
-#  geom_text(aes(label = Month), position = "stack", size = 3.5, angle = 90, vjust = -0.35) +
-  geom_errorbar(aes(ymax = marker, ymin = marker), colour = "red", size = 2, linetype = "dotted") +
+   scale_fill_manual(breaks = legend_ord, values=rev(ocean.haline(20))) +
+##  scale_fill_manual(breaks = legend_ord, values=rev(viridis(26))) +
+# # scale_y_continuous(breaks = 0, 25, 50, 75, 85, 100) +
+  geom_hline(yintercept = 80, linetype = "solid", colour = "black", size = 1.5) +
+  geom_text(aes(label = Month), position = "stack", size = 3.5, angle = 90, vjust = -0.35) +
+  geom_errorbar(aes(ymax = marker, ymin = marker), colour = "red", size = 1.5, linetype = "solid") +
   xlab("Estate") +
   ylab("Percentage of estate") +
-#  coord_flip() +
+  coord_flip() +
   ggtitle("Windows estate - security patching uptake") +
-  labs(subtitle = "This chart shows the uptake of security patches across our Windows IT estate. <br> We aim to have eighty five per cent of the estate (shown by a thick black line) covered by a security update that has been released in the past three months (red line).", caption = paste("Data from Lansweeper. Plotted", Sys.time(), sep = " ")) +
+  labs(subtitle = "This chart shows the uptake of security patches across our Windows IT estate. <br> We aim to have eighty per cent of the estate (shown by a thick black line) <br> covered by a security update that has been released in the past three months (red line).", caption = paste("Data from Lansweeper. Plotted", Sys.time(), sep = " ")) +
   theme_clean() +
   theme(
-    plot.subtitle = element_markdown(size = 11),
+    plot.subtitle = element_markdown(size = 10),
     plot.caption = element_markdown(size = 8),
-    legend.text = element_text(size = 11)
+    legend.text = element_text(size = 9)
   )
 
 plot
 
-ggsave("patching.png", width = 33.867, height = 19.05, units = "cm")
+ggsave("patching.png", width = 20, height = 15, units = "cm")
